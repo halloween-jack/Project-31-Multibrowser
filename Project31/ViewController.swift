@@ -41,6 +41,8 @@ class ViewController: UIViewController, UIWebViewDelegate, UITextFieldDelegate, 
         
         activeWebView = webView
         webView.layer.borderWidth = 3
+        
+        updateUI(for: webView)
     }
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
@@ -56,6 +58,17 @@ class ViewController: UIViewController, UIWebViewDelegate, UITextFieldDelegate, 
     
     func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
         return true
+    }
+    
+    func updateUI(for webView: UIWebView) {
+        title = webView.stringByEvaluatingJavaScript(from: "document.title")
+        addressBar.text = webView.request?.url?.absoluteString ?? ""
+    }
+    
+    func webViewDidFinishLoad(_ webView: UIWebView) {
+        if webView == activeWebView {
+            updateUI(for: webView)
+        }
     }
 
     @objc func addWebView() {
@@ -111,6 +124,14 @@ class ViewController: UIViewController, UIWebViewDelegate, UITextFieldDelegate, 
     @objc func webViewTapped(_ recognizer: UITapGestureRecognizer) {
         if let selectedWebView = recognizer.view as? UIWebView {
             selectWebView(selectedWebView)
+        }
+    }
+    
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        if traitCollection.horizontalSizeClass == .compact {
+            stackView.axis = .vertical
+        } else {
+            stackView.axis = .horizontal
         }
     }
 
